@@ -2,11 +2,7 @@ pipeline{
     agent any
     stages{
         stage("compile"){
-            agent{
-                docker{
-                    image 'python:alpine'
-                }
-            }
+            agent any
             steps{
                 withEnv(["HOME=${env.WORKSPACE}"]) {
                     sh 'pip install -r requirements.txt'
