@@ -1,14 +1,19 @@
-FROM python:alpine
-COPY . .
-
-
-ENV MYSQL_DATABASE_HOST database
-ENV MYSQL_DATABASE_USER clarusway
-ENV MYSQL_DATABASE_PASSWORD Clarusway
-ENV MYSQL_DATABASE_DB phonebook
-ENV MYSQL_DATABASE_PORT 3306
-
-RUN pip install -r requirements.txt
-EXPOSE 80
-ENTRYPOINT [ "python" ]
-CMD ["src/app.py"]
+pipeline{
+    agent any 
+    stages{
+        stage("compile") {
+            agent{
+                docker{
+                    image: 'python:alpine'
+                }
+            }
+            steps{
+                withEnv(["Home=${env.WORKSPACE}"]) {
+                    sh 'pip install -r requirements.txt'
+                    sh 'python -m py_compile src/*.py'
+                    stash(name: 'compilation_result', includes: 'src/*.py*')
+                }
+            }
+        }
+    }
+}
